@@ -23,6 +23,10 @@ jobs:
       - name: Generate Android project
         run: flutter create --platforms=android --org com.wordspeaker --project-name word_speaker .
 
+      - name: Allow dictionary network access
+        run: |
+          sed -i 's|<application|<uses-permission android:name="android.permission.INTERNET" />\n    <application|' android/app/src/main/AndroidManifest.xml
+
       - name: Install dependencies
         run: flutter pub get
 
