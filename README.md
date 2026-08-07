@@ -4,13 +4,14 @@
 
 ## 功能
 
-- 查詢英文單字與 IPA 音標
+- 使用內建字庫離線查詢英文單字與 IPA 音標
 - 播放美式與英式發音
-- 顯示詞性與簡短英文解釋
-- 輸入驗證、離線／查無單字等錯誤提示
+- 內建約 13 萬筆北美英語發音資料
+- 輸入驗證與查無單字提示
 - Material 3 響應式介面
 
-音標與字義來自免 API Key 的 [Free Dictionary API](https://dictionaryapi.dev/)，發音使用手機內建 TTS 語音。
+音標資料衍生自公開領域的 CMU Pronouncing Dictionary；授權資訊位於
+`third_party_licenses/`。發音使用手機內建 TTS，語音包下載後可完全離線使用。
 
 ## 第一次執行
 
@@ -49,6 +50,6 @@ flutter test
 
 ## 裝置需求
 
-- Android：需有網路權限（Flutter 建立的除錯版預設可連網；正式版請確認 Manifest 保留 INTERNET 權限）。
+- Android：音標查詢不需要網路權限。
 - iOS：需要 macOS 與 Xcode 才能編譯或安裝至 iPhone。
-- 裝置若沒有安裝 `en-US` 或 `en-GB` 語音，系統可能用最接近的英文語音代替。
+- 裝置若沒有安裝 `en-US` 或 `en-GB` 語音，請先在系統語音設定下載；之後發音可離線使用。

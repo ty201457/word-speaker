@@ -61,7 +61,6 @@ class _LookupScreenState extends State<LookupScreen> {
   @override
   void dispose() {
     _controller.dispose();
-    _dictionary.close();
     _pronunciation.stop();
     super.dispose();
   }
@@ -125,7 +124,7 @@ class _LookupScreenState extends State<LookupScreen> {
                   ),
                   const SizedBox(height: 6),
                   Text(
-                    '輸入英文單字，立即查看音標與聆聽發音',
+                      '離線查音標，使用手機語音聆聽發音',
                     textAlign: TextAlign.center,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           color: const Color(0xFF6D6878),
@@ -248,20 +247,15 @@ class _LookupScreenState extends State<LookupScreen> {
                     ],
                   ),
                 ),
-                if (entry.partOfSpeech != null)
-                  Chip(label: Text(entry.partOfSpeech!)),
               ],
             ),
-            if (entry.definition != null) ...[
-              const SizedBox(height: 18),
-              Text(
-                entry.definition!,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: const Color(0xFF5C5865),
-                      height: 1.45,
-                    ),
-              ),
-            ],
+            const SizedBox(height: 10),
+            Text(
+              '北美英語 IPA・離線字庫',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFF777281),
+                  ),
+            ),
             const SizedBox(height: 24),
             Row(
               children: [

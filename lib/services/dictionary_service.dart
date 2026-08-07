@@ -1,6 +1,4 @@
-import 'dart:convert';
-import 'dart:io';
-
+import 'package:flutter/services.dart';
 import '../models/dictionary_entry.dart';
 
 class DictionaryException implements Exception {
@@ -12,9 +10,19 @@ class DictionaryException implements Exception {
 }
 
 class DictionaryService {
-  DictionaryService({HttpClient? client}) : _client = client ?? HttpClient();
+  Map<String, String>? _entries;
 
-  final HttpClient _client;
+  Future<void> _load() async {
+    if (_entries != null) return;
+    final contents = await rootBundle.loadString('assets/cmu_ipa.tsv');
+    final entries = <String, String>{};
+    for (final line in contents.split('\n')) {
+      final separator = line.indexOf('\t');
+      if (separator <= 0) continue;
+      entries[line.substring(0, separator)] = line.substring(separator + 1);
+    }
+    _entries = entries;
+  }
 
   Future<DictionaryEntry> lookup(String input) async {
     final word = input.trim().toLowerCase();
@@ -25,38 +33,11 @@ class DictionaryService {
       throw const DictionaryException('目前只支援單一英文單字');
     }
 
-    try {
-      final uri = Uri.https(
-        'api.dictionaryapi.dev',
-        '/api/v2/entries/en/$word',
-      );
-      final request = await _client.getUrl(uri);
-      request.headers.set(HttpHeaders.acceptHeader, 'application/json');
-      final response = await request.close().timeout(const Duration(seconds: 10));
-      final body = await utf8.decoder.bind(response).join();
-
-      if (response.statusCode == HttpStatus.notFound) {
-        throw const DictionaryException('查不到這個單字，請檢查拼字');
-      }
-      if (response.statusCode != HttpStatus.ok) {
-        throw const DictionaryException('字典服務暫時無法使用');
-      }
-
-      final decoded = jsonDecode(body);
-      if (decoded is! List<dynamic>) {
-        throw const DictionaryException('字典資料格式不正確');
-      }
-      return DictionaryEntry.fromApi(decoded);
-    } on DictionaryException {
-      rethrow;
-    } on SocketException {
-      throw const DictionaryException('無法連線，請確認網路狀態');
-    } on FormatException {
-      throw const DictionaryException('查不到這個單字，請檢查拼字');
-    } catch (_) {
-      throw const DictionaryException('查詢失敗，請稍後再試');
+    await _load();
+    final phonetic = _entries![word];
+    if (phonetic == null) {
+      throw const DictionaryException('離線字庫中找不到這個單字');
     }
+    return DictionaryEntry(word: word, phonetic: phonetic);
   }
-
-  void close() => _client.close(force: true);
 }
