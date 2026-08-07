@@ -1,4 +1,4 @@
-import { dictionary } from '../../offline_source/package/index.js'
+import { dictionary } from 'cmu-pronouncing-dictionary'
 import { writeFileSync } from 'node:fs'
 
 const vowels = new Set([
