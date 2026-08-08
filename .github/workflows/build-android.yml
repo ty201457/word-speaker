@@ -23,6 +23,11 @@ jobs:
       - name: Generate Android project
         run: flutter create --platforms=android --org com.wordspeaker --project-name word_speaker .
 
+      - name: Validate offline dictionary asset
+        run: |
+          test -s assets/cmu_ipa.tsv
+          python3 -c "from pathlib import Path; text = Path('assets/cmu_ipa.tsv').read_text(encoding='utf-8'); assert 'spot\\t/ˈspɑt/' in text"
+
       - name: Install dependencies
         run: flutter pub get
 
