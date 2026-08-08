@@ -1,4 +1,4 @@
-name: Build Android APK
+name: Build Offline Chinese Android APK
 
 on:
   workflow_dispatch:
@@ -14,6 +14,9 @@ jobs:
       - name: Check out source
         uses: actions/checkout@v4
 
+      - name: Apply offline Chinese update
+        run: unzip -o offline_chinese_update.zip
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
@@ -28,18 +31,20 @@ jobs:
           python3 - <<'PY'
           import gzip
           from pathlib import Path
-          compressed = b''.join([
-              Path('assets/cmu_ipa.tsv.gz.part0').read_bytes(),
-              Path('assets/cmu_ipa.tsv.gz.part1').read_bytes(),
-          ])
-          data = gzip.decompress(compressed)
+          parts = sorted(Path('assets').glob('offline_dictionary.tsv.gz.part*'))
+          assert len(parts) == 7
+          data = gzip.decompress(b''.join(part.read_bytes() for part in parts))
           assert data.isascii()
           assert b'spot\t/' + br'\u02c8sp\u0251t/' in data
+          assert br'\u4e2d' in data
           assert data.count(b'\n') >= 126000
           PY
 
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Run tests
+        run: flutter test
 
       - name: Build release APK
         run: flutter build apk --release
@@ -47,7 +52,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: word-speaker-android
+          name: word-speaker-offline-chinese
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 30
