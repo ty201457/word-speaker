@@ -80,6 +80,9 @@ class _LookupScreenState extends State<LookupScreen> {
     } on DictionaryException catch (error) {
       if (!mounted) return;
       setState(() => _error = error.message);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => _error = '離線字庫載入失敗，請重新安裝最新版本');
     } finally {
       if (mounted) setState(() => _loading = false);
     }

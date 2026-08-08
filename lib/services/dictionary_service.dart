@@ -10,18 +10,11 @@ class DictionaryException implements Exception {
 }
 
 class DictionaryService {
-  Map<String, String>? _entries;
+  String? _dictionaryText;
 
   Future<void> _load() async {
-    if (_entries != null) return;
-    final contents = await rootBundle.loadString('assets/cmu_ipa.tsv');
-    final entries = <String, String>{};
-    for (final line in contents.split('\n')) {
-      final separator = line.indexOf('\t');
-      if (separator <= 0) continue;
-      entries[line.substring(0, separator)] = line.substring(separator + 1);
-    }
-    _entries = entries;
+    if (_dictionaryText != null) return;
+    _dictionaryText = await rootBundle.loadString('assets/cmu_ipa.tsv');
   }
 
   Future<DictionaryEntry> lookup(String input) async {
@@ -34,10 +27,13 @@ class DictionaryService {
     }
 
     await _load();
-    final phonetic = _entries![word];
-    if (phonetic == null) {
+    final match = RegExp(
+      '^${RegExp.escape(word)}\\t([^\\n]+)',
+      multiLine: true,
+    ).firstMatch(_dictionaryText!);
+    if (match == null) {
       throw const DictionaryException('離線字庫中找不到這個單字');
     }
-    return DictionaryEntry(word: word, phonetic: phonetic);
+    return DictionaryEntry(word: word, phonetic: match.group(1)!);
   }
 }
