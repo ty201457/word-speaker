@@ -1,5 +1,6 @@
 import { dictionary } from 'cmu-pronouncing-dictionary'
 import { writeFileSync } from 'node:fs'
+import { gzipSync } from 'node:zlib'
 
 const vowels = new Set([
   'AA', 'AE', 'AH', 'AO', 'AW', 'AY', 'EH', 'ER', 'EY',
@@ -63,11 +64,23 @@ function toIpa(pronunciation) {
   return `/${result}/`
 }
 
+function toAsciiEscapes(value) {
+  return Array.from(value, (character) => {
+    const codePoint = character.codePointAt(0)
+    if (codePoint >= 0x20 && codePoint <= 0x7e) return character
+    return `\\u${codePoint.toString(16).padStart(4, '0')}`
+  }).join('')
+}
+
 const rows = Object.entries(dictionary)
   .filter(([word]) => !/\(\d+\)$/.test(word))
   .filter(([word]) => /^[a-z][a-z'.-]*$/.test(word))
-  .map(([word, pronunciation]) => `${word}\t${toIpa(pronunciation)}`)
+  .map(([word, pronunciation]) =>
+    `${word}\t${toAsciiEscapes(toIpa(pronunciation))}`)
   .sort((a, b) => a.localeCompare(b))
 
-writeFileSync('assets/cmu_ipa.tsv', `${rows.join('\n')}\n`)
-console.log(`Generated ${rows.length} offline entries.`)
+const compressed = gzipSync(Buffer.from(`${rows.join('\n')}\n`), { level: 9 })
+const splitAt = Math.ceil(compressed.length / 2)
+writeFileSync('assets/cmu_ipa.tsv.gz.part0', compressed.subarray(0, splitAt))
+writeFileSync('assets/cmu_ipa.tsv.gz.part1', compressed.subarray(splitAt))
+console.log(`Generated ${rows.length} offline entries in ${compressed.length} bytes.`)

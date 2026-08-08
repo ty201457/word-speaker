@@ -25,8 +25,18 @@ jobs:
 
       - name: Validate offline dictionary asset
         run: |
-          test -s assets/cmu_ipa.tsv
-          python3 -c "from pathlib import Path; text = Path('assets/cmu_ipa.tsv').read_text(encoding='utf-8'); assert 'spot\\t/ˈspɑt/' in text"
+          python3 - <<'PY'
+          import gzip
+          from pathlib import Path
+          compressed = b''.join([
+              Path('assets/cmu_ipa.tsv.gz.part0').read_bytes(),
+              Path('assets/cmu_ipa.tsv.gz.part1').read_bytes(),
+          ])
+          data = gzip.decompress(compressed)
+          assert data.isascii()
+          assert b'spot\t/' + br'\u02c8sp\u0251t/' in data
+          assert data.count(b'\n') >= 126000
+          PY
 
       - name: Install dependencies
         run: flutter pub get

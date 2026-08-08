@@ -1,3 +1,7 @@
+import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import '../models/dictionary_entry.dart';
 
@@ -14,7 +18,18 @@ class DictionaryService {
 
   Future<void> _load() async {
     if (_dictionaryText != null) return;
-    _dictionaryText = await rootBundle.loadString('assets/cmu_ipa.tsv');
+    final parts = await Future.wait([
+      rootBundle.load('assets/cmu_ipa.tsv.gz.part0'),
+      rootBundle.load('assets/cmu_ipa.tsv.gz.part1'),
+    ]);
+    final bytes = Uint8List(parts.fold<int>(0, (sum, part) => sum + part.lengthInBytes));
+    var offset = 0;
+    for (final part in parts) {
+      final chunk = part.buffer.asUint8List(part.offsetInBytes, part.lengthInBytes);
+      bytes.setRange(offset, offset + chunk.length, chunk);
+      offset += chunk.length;
+    }
+    _dictionaryText = utf8.decode(gzip.decode(bytes));
   }
 
   Future<DictionaryEntry> lookup(String input) async {
@@ -34,6 +49,16 @@ class DictionaryService {
     if (match == null) {
       throw const DictionaryException('離線字庫中找不到這個單字');
     }
-    return DictionaryEntry(word: word, phonetic: match.group(1)!);
+    return DictionaryEntry(
+      word: word,
+      phonetic: _decodeUnicodeEscapes(match.group(1)!),
+    );
+  }
+
+  String _decodeUnicodeEscapes(String value) {
+    return value.replaceAllMapped(
+      RegExp(r'\\u([0-9a-fA-F]{4})'),
+      (match) => String.fromCharCode(int.parse(match.group(1)!, radix: 16)),
+    );
   }
 }
