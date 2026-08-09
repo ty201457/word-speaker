@@ -4,14 +4,17 @@
 
 ## 功能
 
-- 使用內建字庫離線查詢英文單字與 IPA 音標
+- 使用內建字庫離線查詢英文單字與美式 KK 音標
 - 播放美式與英式發音
+- 將 KK 音標切成可點擊的音素，逐一播放示範發音
 - 內建約 13 萬筆北美英語發音資料
+- 內建約 8.3 萬筆繁體中文翻譯
 - 輸入驗證與查無單字提示
 - Material 3 響應式介面
 
-音標資料衍生自公開領域的 CMU Pronouncing Dictionary；授權資訊位於
-`third_party_licenses/`。發音使用手機內建 TTS，語音包下載後可完全離線使用。
+音標資料衍生自公開領域的 CMU Pronouncing Dictionary，翻譯來自 MIT
+授權的 ECDICT；授權資訊位於 `third_party_licenses/`。發音使用手機內建
+TTS。先在手機安裝英文語音包後，整字與個別音素發音都可離線使用。
 
 ## 第一次執行
 
@@ -46,7 +49,7 @@ flutter test
 
 每次推送至 `main` 分支，GitHub Actions 都會自動分析、測試並建立 Release APK。
 完成後到儲存庫的 **Actions → Build Android APK → Artifacts**，下載
-`word-speaker-android`，解壓縮後即可取得 `app-release.apk`。
+`word-speaker-kk-phonemes`，解壓縮後即可取得 `app-release.apk`。
 
 ## 裝置需求
 
