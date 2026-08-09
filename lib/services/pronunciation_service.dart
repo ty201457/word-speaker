@@ -23,7 +23,7 @@ class PronunciationService {
     await _tts.speak(word);
   }
 
-  Future<void> speakPhoneme(String speechCue) async {
+  Future<void> speakSyllable(String speechCue) async {
     await _tts.stop();
     await _tts.setLanguage(EnglishAccent.american.locale);
     await _tts.setSpeechRate(0.32);
