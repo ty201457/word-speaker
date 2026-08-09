@@ -22,7 +22,9 @@ jobs:
       - name: Restore latest app source
         run: |
           git checkout HEAD -- \
+            pubspec.yaml \
             lib/main.dart \
+            lib/screens/support_screen.dart \
             lib/models/dictionary_entry.dart \
             lib/services/dictionary_service.dart \
             lib/services/pronunciation_service.dart \
@@ -35,7 +37,7 @@ jobs:
           cache: true
 
       - name: Generate Android project
-        run: flutter create --platforms=android --org com.wordspeaker --project-name word_speaker .
+        run: flutter create --platforms=android --org com.ty201457 --project-name word_speaker .
 
       - name: Validate offline dictionary asset
         run: |
@@ -54,13 +56,17 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build release APK
-        run: flutter build apk --release
+      - name: Build release packages
+        run: |
+          flutter build apk --release
+          flutter build appbundle --release
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: word-speaker-kk-syllables
-          path: build/app/outputs/flutter-apk/app-release.apk
+          name: word-speaker-store-candidate
+          path: |
+            build/app/outputs/flutter-apk/app-release.apk
+            build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 30
