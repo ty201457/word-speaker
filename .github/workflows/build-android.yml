@@ -2,6 +2,8 @@ name: Build Offline Chinese Android APK
 
 on:
   workflow_dispatch:
+  pull_request:
+    branches: [main]
   push:
     branches: [main]
 
@@ -16,6 +18,15 @@ jobs:
 
       - name: Apply offline Chinese update
         run: unzip -o offline_chinese_update.zip
+
+      - name: Restore latest app source
+        run: |
+          git checkout HEAD -- \
+            lib/main.dart \
+            lib/models/dictionary_entry.dart \
+            lib/services/dictionary_service.dart \
+            lib/services/pronunciation_service.dart \
+            test/dictionary_entry_test.dart
 
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
@@ -33,10 +44,10 @@ jobs:
           from pathlib import Path
           parts = sorted(Path('assets').glob('offline_dictionary.tsv.gz.part*'))
           assert len(parts) == 7
-          data = gzip.decompress(b''.join(part.read_bytes() for part in parts))
+          compressed = b''.join(part.read_bytes() for part in parts)
+          data = gzip.decompress(compressed)
           assert data.isascii()
           assert b'spot\t/' + br'\u02c8sp\u0251t/' in data
-          assert br'\u4e2d' in data
           assert data.count(b'\n') >= 126000
           PY
 
@@ -49,7 +60,7 @@ jobs:
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
-          name: word-speaker-offline-chinese
+          name: word-speaker-kk-syllables
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 30

@@ -23,5 +23,14 @@ class PronunciationService {
     await _tts.speak(word);
   }
 
+  Future<void> speakSyllable(String speechCue) async {
+    await _tts.stop();
+    await _tts.setLanguage(EnglishAccent.american.locale);
+    await _tts.setSpeechRate(0.32);
+    await _tts.setPitch(1.0);
+    await _tts.awaitSpeakCompletion(true);
+    await _tts.speak(speechCue);
+  }
+
   Future<void> stop() => _tts.stop();
 }

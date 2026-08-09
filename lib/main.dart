@@ -57,6 +57,7 @@ class _LookupScreenState extends State<LookupScreen> {
   String? _error;
   bool _loading = false;
   EnglishAccent? _speakingAccent;
+  SyllableSegment? _speakingSyllable;
 
   @override
   void dispose() {
@@ -96,6 +97,15 @@ class _LookupScreenState extends State<LookupScreen> {
       await _pronunciation.speak(entry.word, accent);
     } finally {
       if (mounted) setState(() => _speakingAccent = null);
+    }
+  }
+
+  Future<void> _speakSyllable(SyllableSegment syllable) async {
+    setState(() => _speakingSyllable = syllable);
+    try {
+      await _pronunciation.speakSyllable(syllable.speechCue);
+    } finally {
+      if (mounted) setState(() => _speakingSyllable = null);
     }
   }
 
@@ -241,7 +251,7 @@ class _LookupScreenState extends State<LookupScreen> {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        entry.phonetic,
+                        entry.kkPhonetic,
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
                               color: const Color(0xFF6255D9),
                               fontWeight: FontWeight.w600,
@@ -254,11 +264,64 @@ class _LookupScreenState extends State<LookupScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              '北美英語 IPA・離線字庫',
+              '美式 KK 音標・離線字庫',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: const Color(0xFF777281),
                   ),
             ),
+            const SizedBox(height: 18),
+            Text(
+              '點選音節聆聽分段發音',
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: const Color(0xFF6255D9),
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final syllable in entry.syllables)
+                  ActionChip(
+                    avatar: Icon(
+                      identical(_speakingSyllable, syllable)
+                          ? Icons.volume_up_rounded
+                          : Icons.volume_down_rounded,
+                      size: 18,
+                    ),
+                    label: Text(
+                      '/${syllable.phonetic}/',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: syllable.isPrimaryStress
+                            ? FontWeight.w800
+                            : FontWeight.w600,
+                      ),
+                    ),
+                    onPressed: _speakingSyllable == null && _speakingAccent == null
+                        ? () => _speakSyllable(syllable)
+                        : null,
+                  ),
+              ],
+            ),
+            if (entry.translation != null) ...[
+              const SizedBox(height: 18),
+              const Divider(),
+              const SizedBox(height: 12),
+              Text(
+                '中文翻譯',
+                style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: const Color(0xFF6255D9),
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                entry.translation!,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(height: 1.5),
+              ),
+            ],
             const SizedBox(height: 24),
             Row(
               children: [
@@ -267,7 +330,7 @@ class _LookupScreenState extends State<LookupScreen> {
                   label: _speakingAccent == EnglishAccent.american
                       ? '播放中…'
                       : '美式發音',
-                  onPressed: _speakingAccent == null
+                  onPressed: _speakingAccent == null && _speakingSyllable == null
                       ? () => _speak(EnglishAccent.american)
                       : null,
                 ),
@@ -277,7 +340,7 @@ class _LookupScreenState extends State<LookupScreen> {
                   label: _speakingAccent == EnglishAccent.british
                       ? '播放中…'
                       : '英式發音',
-                  onPressed: _speakingAccent == null
+                  onPressed: _speakingAccent == null && _speakingSyllable == null
                       ? () => _speak(EnglishAccent.british)
                       : null,
                 ),
