@@ -57,7 +57,7 @@ class _LookupScreenState extends State<LookupScreen> {
   String? _error;
   bool _loading = false;
   EnglishAccent? _speakingAccent;
-  PhonemeSegment? _speakingPhoneme;
+  SyllableSegment? _speakingSyllable;
 
   @override
   void dispose() {
@@ -100,12 +100,12 @@ class _LookupScreenState extends State<LookupScreen> {
     }
   }
 
-  Future<void> _speakPhoneme(PhonemeSegment phoneme) async {
-    setState(() => _speakingPhoneme = phoneme);
+  Future<void> _speakSyllable(SyllableSegment syllable) async {
+    setState(() => _speakingSyllable = syllable);
     try {
-      await _pronunciation.speakPhoneme(phoneme.speechCue);
+      await _pronunciation.speakSyllable(syllable.speechCue);
     } finally {
-      if (mounted) setState(() => _speakingPhoneme = null);
+      if (mounted) setState(() => _speakingSyllable = null);
     }
   }
 
@@ -271,7 +271,7 @@ class _LookupScreenState extends State<LookupScreen> {
             ),
             const SizedBox(height: 18),
             Text(
-              '點選音標聆聽個別發音',
+              '點選音節聆聽分段發音',
               style: Theme.of(context).textTheme.labelLarge?.copyWith(
                     color: const Color(0xFF6255D9),
                     fontWeight: FontWeight.w700,
@@ -282,23 +282,25 @@ class _LookupScreenState extends State<LookupScreen> {
               spacing: 8,
               runSpacing: 8,
               children: [
-                for (final phoneme in entry.phonemes)
+                for (final syllable in entry.syllables)
                   ActionChip(
                     avatar: Icon(
-                      identical(_speakingPhoneme, phoneme)
+                      identical(_speakingSyllable, syllable)
                           ? Icons.volume_up_rounded
                           : Icons.volume_down_rounded,
                       size: 18,
                     ),
                     label: Text(
-                      phoneme.symbol,
-                      style: const TextStyle(
+                      '/${syllable.phonetic}/',
+                      style: TextStyle(
                         fontSize: 18,
-                        fontWeight: FontWeight.w700,
+                        fontWeight: syllable.isPrimaryStress
+                            ? FontWeight.w800
+                            : FontWeight.w600,
                       ),
                     ),
-                    onPressed: _speakingPhoneme == null && _speakingAccent == null
-                        ? () => _speakPhoneme(phoneme)
+                    onPressed: _speakingSyllable == null && _speakingAccent == null
+                        ? () => _speakSyllable(syllable)
                         : null,
                   ),
               ],
@@ -328,7 +330,7 @@ class _LookupScreenState extends State<LookupScreen> {
                   label: _speakingAccent == EnglishAccent.american
                       ? '播放中…'
                       : '美式發音',
-                  onPressed: _speakingAccent == null && _speakingPhoneme == null
+                  onPressed: _speakingAccent == null && _speakingSyllable == null
                       ? () => _speak(EnglishAccent.american)
                       : null,
                 ),
@@ -338,7 +340,7 @@ class _LookupScreenState extends State<LookupScreen> {
                   label: _speakingAccent == EnglishAccent.british
                       ? '播放中…'
                       : '英式發音',
-                  onPressed: _speakingAccent == null && _speakingPhoneme == null
+                  onPressed: _speakingAccent == null && _speakingSyllable == null
                       ? () => _speak(EnglishAccent.british)
                       : null,
                 ),
