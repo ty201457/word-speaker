@@ -11,6 +11,7 @@
 - 內建約 8.3 萬筆繁體中文翻譯
 - 輸入驗證與查無單字提示
 - Material 3 響應式介面
+- 可透過 App Store／Google Play 一次性自願支持開發；不解鎖額外功能
 
 音標資料衍生自公開領域的 CMU Pronouncing Dictionary，翻譯來自 MIT
 授權的 ECDICT；授權資訊位於 `third_party_licenses/`。發音使用手機內建
@@ -56,3 +57,10 @@ flutter test
 - Android：音標查詢不需要網路權限。
 - iOS：需要 macOS 與 Xcode 才能編譯或安裝至 iPhone。
 - 裝置若沒有安裝 `en-US` 或 `en-GB` 語音，請先在系統語音設定下載；之後發音可離線使用。
+
+
+## 上架資料
+
+- [隱私權政策](docs/PRIVACY_POLICY.md)
+- [繁體中文商店文案](docs/STORE_LISTING_ZH_TW.md)
+- [上架檢查清單](docs/RELEASE_CHECKLIST.md)
