@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'models/dictionary_entry.dart';
+import 'screens/support_screen.dart';
 import 'services/dictionary_service.dart';
 import 'services/pronunciation_service.dart';
 import 'widgets/accent_button.dart';
@@ -112,6 +113,21 @@ class _LookupScreenState extends State<LookupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        actions: [
+          IconButton(
+            tooltip: '支持開發',
+            icon: const Icon(Icons.favorite_outline_rounded),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const SupportScreen(),
+              ),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+      ),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
