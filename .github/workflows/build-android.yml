@@ -39,6 +39,10 @@ jobs:
       - name: Generate Android project
         run: flutter create --platforms=android --org com.ty201457 --project-name word_speaker .
 
+      - name: Set production application ID
+        run: |
+          sed -i 's/com.ty201457.word_speaker/com.ty201457.wordspeaker/g' android/app/build.gradle.kts
+
       - name: Validate offline dictionary asset
         run: |
           python3 - <<'PY'
