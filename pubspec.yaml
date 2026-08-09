@@ -20,5 +20,10 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - assets/cmu_ipa.tsv.gz.part0
-    - assets/cmu_ipa.tsv.gz.part1
+    - assets/offline_dictionary.tsv.gz.part0
+    - assets/offline_dictionary.tsv.gz.part1
+    - assets/offline_dictionary.tsv.gz.part2
+    - assets/offline_dictionary.tsv.gz.part3
+    - assets/offline_dictionary.tsv.gz.part4
+    - assets/offline_dictionary.tsv.gz.part5
+    - assets/offline_dictionary.tsv.gz.part6
