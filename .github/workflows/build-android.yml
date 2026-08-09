@@ -22,7 +22,9 @@ jobs:
       - name: Restore latest app source
         run: |
           git checkout HEAD -- \
+            pubspec.yaml \
             lib/main.dart \
+            lib/screens/support_screen.dart \
             lib/models/dictionary_entry.dart \
             lib/services/dictionary_service.dart \
             lib/services/pronunciation_service.dart \
