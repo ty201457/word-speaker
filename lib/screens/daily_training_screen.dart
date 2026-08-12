@@ -4,7 +4,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../models/dictionary_entry.dart';
 import '../services/daily_word_service.dart';
 import '../services/dictionary_service.dart';
-import '../services/notification_service.dart';
 import '../services/pronunciation_service.dart';
 
 class DailyTrainingScreen extends StatefulWidget {
@@ -22,8 +21,6 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
 
   final _revealed = <String>{};
   final _remembered = <String>{};
-  bool _notificationsEnabled = false;
-  TimeOfDay _reminderTime = const TimeOfDay(hour: 20, minute: 0);
 
   String get _dateKey {
     final now = DateTime.now();
@@ -38,12 +35,8 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
 
   Future<void> _loadSettings() async {
     final preferences = await SharedPreferences.getInstance();
-    final time = await NotificationService.instance.reminderTime();
     if (!mounted) return;
     setState(() {
-      _notificationsEnabled =
-          preferences.getBool('daily_notification_enabled') ?? false;
-      _reminderTime = TimeOfDay(hour: time.hour, minute: time.minute);
       _remembered.addAll(preferences.getStringList(_dateKey) ?? const []);
     });
   }
@@ -54,40 +47,6 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
     });
     final preferences = await SharedPreferences.getInstance();
     await preferences.setStringList(_dateKey, _remembered.toList());
-  }
-
-  Future<void> _toggleNotifications(bool enabled) async {
-    try {
-      if (enabled) {
-        await NotificationService.instance.scheduleDaily(
-          hour: _reminderTime.hour,
-          minute: _reminderTime.minute,
-        );
-      } else {
-        await NotificationService.instance.disable();
-      }
-      if (mounted) setState(() => _notificationsEnabled = enabled);
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('請在系統設定中允許通知')),
-      );
-    }
-  }
-
-  Future<void> _chooseTime() async {
-    final selected = await showTimePicker(
-      context: context,
-      initialTime: _reminderTime,
-    );
-    if (selected == null) return;
-    setState(() => _reminderTime = selected);
-    if (_notificationsEnabled) {
-      await NotificationService.instance.scheduleDaily(
-        hour: selected.hour,
-        minute: selected.minute,
-      );
-    }
   }
 
   Future<void> _speakWord(String word) =>
@@ -136,27 +95,7 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
               const SizedBox(height: 20),
               for (var index = 0; index < entries.length; index++)
                 _wordCard(entries[index], _labelFor(index)),
-              const SizedBox(height: 8),
-              Card(
-                child: Column(
-                  children: [
-                    SwitchListTile(
-                      title: const Text('每天提醒'),
-                      subtitle: Text(
-                        '提醒時間：${_reminderTime.format(context)}',
-                      ),
-                      value: _notificationsEnabled,
-                      onChanged: _toggleNotifications,
-                    ),
-                    ListTile(
-                      leading: const Icon(Icons.schedule_rounded),
-                      title: const Text('修改提醒時間'),
-                      trailing: const Icon(Icons.chevron_right_rounded),
-                      onTap: _chooseTime,
-                    ),
-                  ],
-                ),
-              ),
+
             ],
           );
         },
