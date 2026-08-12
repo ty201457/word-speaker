@@ -27,7 +27,6 @@ jobs:
             lib/screens/support_screen.dart \
             lib/screens/daily_training_screen.dart \
             lib/services/daily_word_service.dart \
-            lib/services/notification_service.dart \
             lib/models/dictionary_entry.dart \
             lib/services/dictionary_service.dart \
             lib/services/pronunciation_service.dart \
@@ -45,7 +44,6 @@ jobs:
       - name: Set production application ID
         run: |
           sed -i 's/com.ty201457.word_speaker/com.ty201457.wordspeaker/g' android/app/build.gradle.kts
-          sed -i '/compileOptions {/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
           sed -i '/^android {/i dependencies { coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") }' android/app/build.gradle.kts
 
       - name: Validate offline dictionary asset
@@ -70,12 +68,18 @@ jobs:
           flutter build apk --release
           flutter build appbundle --release
 
-      - name: Upload APK
+      - name: Upload phone test APK
         uses: actions/upload-artifact@v4
         with:
-          name: word-speaker-store-candidate
-          path: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+          name: word-speaker-phone-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload Play Store AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-speaker-play-store-aab
+          path: build/app/outputs/bundle/release/app-release.aab
           if-no-files-found: error
           retention-days: 30
