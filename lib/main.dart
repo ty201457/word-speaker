@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'models/dictionary_entry.dart';
 import 'screens/daily_training_screen.dart';
-import 'screens/support_screen.dart';
 import 'services/dictionary_service.dart';
 import 'services/pronunciation_service.dart';
 import 'widgets/accent_button.dart';
@@ -123,15 +122,6 @@ class _LookupScreenState extends State<LookupScreen> {
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute<void>(
                 builder: (_) => const DailyTrainingScreen(),
-              ),
-            ),
-          ),
-          IconButton(
-            tooltip: '支持開發',
-            icon: const Icon(Icons.favorite_outline_rounded),
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute<void>(
-                builder: (_) => const SupportScreen(),
               ),
             ),
           ),
