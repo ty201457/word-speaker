@@ -45,6 +45,8 @@ jobs:
       - name: Set production application ID
         run: |
           sed -i 's/com.ty201457.word_speaker/com.ty201457.wordspeaker/g' android/app/build.gradle.kts
+          sed -i '/sourceCompatibility = JavaVersion.VERSION_11/i\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
+          sed -i '$a\\ndependencies {\\n    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")\\n}' android/app/build.gradle.kts
 
       - name: Validate offline dictionary asset
         run: |
