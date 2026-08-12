@@ -25,6 +25,9 @@ jobs:
             pubspec.yaml \
             lib/main.dart \
             lib/screens/support_screen.dart \
+            lib/screens/daily_training_screen.dart \
+            lib/services/daily_word_service.dart \
+            lib/services/notification_service.dart \
             lib/models/dictionary_entry.dart \
             lib/services/dictionary_service.dart \
             lib/services/pronunciation_service.dart \
@@ -42,6 +45,8 @@ jobs:
       - name: Set production application ID
         run: |
           sed -i 's/com.ty201457.word_speaker/com.ty201457.wordspeaker/g' android/app/build.gradle.kts
+          sed -i '/compileOptions {/a\        isCoreLibraryDesugaringEnabled = true' android/app/build.gradle.kts
+          sed -i '/^android {/i dependencies { coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") }' android/app/build.gradle.kts
 
       - name: Validate offline dictionary asset
         run: |
