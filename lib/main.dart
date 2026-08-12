@@ -3,16 +3,11 @@ import 'package:flutter/material.dart';
 import 'models/dictionary_entry.dart';
 import 'screens/daily_training_screen.dart';
 import 'screens/support_screen.dart';
-import 'services/notification_service.dart';
 import 'services/dictionary_service.dart';
 import 'services/pronunciation_service.dart';
 import 'widgets/accent_button.dart';
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await NotificationService.instance.initialize();
-  runApp(const WordSpeakerApp());
-}
+void main() => runApp(const WordSpeakerApp());
 
 class WordSpeakerApp extends StatelessWidget {
   const WordSpeakerApp({super.key});
