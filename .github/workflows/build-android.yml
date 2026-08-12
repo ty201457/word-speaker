@@ -24,7 +24,6 @@ jobs:
           git checkout HEAD -- \
             pubspec.yaml \
             lib/main.dart \
-            lib/screens/support_screen.dart \
             lib/screens/daily_training_screen.dart \
             lib/services/daily_word_service.dart \
             lib/models/dictionary_entry.dart \
@@ -43,7 +42,7 @@ jobs:
 
       - name: Set production application ID
         run: |
-          sed -i 's/com.ty201457.word_speaker/com.ty201457.wordspeaker/g' android/app/build.gradle.kts
+          sed -i 's/com.ty201457.word_speaker/com.wordspeaker.word_speaker/g' android/app/build.gradle.kts
           sed -i '/^android {/i dependencies { coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5") }' android/app/build.gradle.kts
 
       - name: Validate offline dictionary asset
@@ -66,12 +65,21 @@ jobs:
       - name: Build release packages
         run: |
           flutter build apk --release
+          flutter build apk --release --split-per-abi
           flutter build appbundle --release
 
-      - name: Upload phone test APK
+      - name: Upload small arm64 phone APK
         uses: actions/upload-artifact@v4
         with:
-          name: word-speaker-phone-apk
+          name: word-speaker-arm64-apk
+          path: build/app/outputs/flutter-apk/app-arm64-v8a-release.apk
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload universal phone APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: word-speaker-universal-apk
           path: build/app/outputs/flutter-apk/app-release.apk
           if-no-files-found: error
           retention-days: 30

@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-
 import '../models/dictionary_entry.dart';
 import '../services/daily_word_service.dart';
 import '../services/dictionary_service.dart';
@@ -27,26 +25,10 @@ class _DailyTrainingScreenState extends State<DailyTrainingScreen> {
     return 'daily_progress_${now.year}_${now.month}_${now.day}';
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _loadSettings();
-  }
-
-  Future<void> _loadSettings() async {
-    final preferences = await SharedPreferences.getInstance();
-    if (!mounted) return;
-    setState(() {
-      _remembered.addAll(preferences.getStringList(_dateKey) ?? const []);
-    });
-  }
-
   Future<void> _toggleRemembered(String word) async {
     setState(() {
       if (!_remembered.add(word)) _remembered.remove(word);
     });
-    final preferences = await SharedPreferences.getInstance();
-    await preferences.setStringList(_dateKey, _remembered.toList());
   }
 
   Future<void> _speakWord(String word) =>
