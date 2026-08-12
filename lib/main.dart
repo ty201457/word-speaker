@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 
 import 'models/dictionary_entry.dart';
+import 'screens/daily_training_screen.dart';
 import 'screens/support_screen.dart';
+import 'services/notification_service.dart';
 import 'services/dictionary_service.dart';
 import 'services/pronunciation_service.dart';
 import 'widgets/accent_button.dart';
 
-void main() => runApp(const WordSpeakerApp());
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await NotificationService.instance.initialize();
+  runApp(const WordSpeakerApp());
+}
 
 class WordSpeakerApp extends StatelessWidget {
   const WordSpeakerApp({super.key});
@@ -117,6 +123,15 @@ class _LookupScreenState extends State<LookupScreen> {
         backgroundColor: Colors.transparent,
         actions: [
           IconButton(
+            tooltip: '每日單字',
+            icon: const Icon(Icons.school_outlined),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const DailyTrainingScreen(),
+              ),
+            ),
+          ),
+          IconButton(
             tooltip: '支持開發',
             icon: const Icon(Icons.favorite_outline_rounded),
             onPressed: () => Navigator.of(context).push(
@@ -159,7 +174,22 @@ class _LookupScreenState extends State<LookupScreen> {
                           color: const Color(0xFF6D6878),
                         ),
                   ),
-                  const SizedBox(height: 30),
+                  const SizedBox(height: 22),
+                  Card(
+                    color: Theme.of(context).colorScheme.primaryContainer,
+                    child: ListTile(
+                      leading: const Icon(Icons.today_rounded),
+                      title: const Text('今日單字訓練'),
+                      subtitle: const Text('單音節、雙音節、多音節各一個'),
+                      trailing: const Icon(Icons.chevron_right_rounded),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                          builder: (_) => const DailyTrainingScreen(),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 18),
                   TextField(
                     controller: _controller,
                     autocorrect: false,
