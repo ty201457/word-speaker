@@ -25,6 +25,9 @@ jobs:
             pubspec.yaml \
             lib/main.dart \
             lib/screens/support_screen.dart \
+            lib/screens/daily_training_screen.dart \
+            lib/services/daily_word_service.dart \
+            lib/services/notification_service.dart \
             lib/models/dictionary_entry.dart \
             lib/services/dictionary_service.dart \
             lib/services/pronunciation_service.dart \
